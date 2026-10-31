@@ -2,17 +2,13 @@ name: Daily ETL
 
 on:
   schedule:
-    - cron: "0 6 * * *" # Every day at 06:00 UTC (11:30 AM IST)
+    - cron: "0 6 * * *"
   workflow_dispatch:
-
-permissions:
-  contents: read
 
 jobs:
   etl:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
-
     steps:
       - name: Check out code
         uses: actions/checkout@v5
@@ -22,22 +18,17 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: requirements.txt
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
-
-      - name: Check dependency versions
-        run: |
-          python --version
-          python -m pip show prefect fastapi pydantic
-          python -m pip check
+          pip install -r requirements.txt
 
       - name: Run ETL pipeline
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SOCRATA_APP_TOKEN: ${{ secrets.SOCRATA_APP_TOKEN }}
+          PREFECT_API_URL: ${{ secrets.PREFECT_API_URL }}
+          PREFECT_API_KEY: ${{ secrets.PREFECT_API_KEY }}
           PREFECT_SERVER_ANALYTICS_ENABLED: "false"
         run: python etl_pipeline.py
