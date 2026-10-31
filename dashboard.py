@@ -8,7 +8,22 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 
 load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///cpd_local.db")
+
+# Prefer the environment variable (.env locally / environment on hosted services).
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+# Streamlit Community Cloud stores secrets in st.secrets.
+if not DATABASE_URL:
+    try:
+        DATABASE_URL = st.secrets["DATABASE_URL"]
+    except Exception:
+        # Streamlit secrets may be unavailable during local development.
+        DATABASE_URL = None
+
+# Allow SQLite for local development, but fail clearly if cloud deployment
+# has neither an environment variable nor a configured Streamlit secret.
+if not DATABASE_URL:
+    DATABASE_URL = "sqlite:///cpd_local.db"
 DAY_ORDER_FULL = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 DAY_ABBR = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 

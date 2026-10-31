@@ -14,7 +14,7 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 load_dotenv()
 
 # Default = a local SQLite file for testing; set DATABASE_URL to use Postgres (Neon / Docker)
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///cpd_local.db")
+DATABASE_URL = os.getenv("DATABASE_URL") or "sqlite:///cpd_local.db"
 
 metadata = MetaData()
 incidents = Table(
