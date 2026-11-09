@@ -4,7 +4,7 @@ An end-to-end data pipeline that collects incident records from the Cambridge Po
 
 I built this project to get hands-on experience with the full data engineering workflow — from pulling data from an API to storing it in a database and making the results useful through visualisations.
 
-**Live dashboard:** [Cambridge Crime Analytics](https://cambridge-crime-trends-data-pipeline.streamlit.app/)  
+**Live dashboard:** [Cambridge Crime Analytics](https://cambridge-crime-data-pipeline.streamlit.app/)  
 **GitHub repository:** [Nishanta04/cambridge-crime-data-pipeline](https://github.com/Nishanta04/cambridge-crime-data-pipeline)
 
 ## Dashboard
