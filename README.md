@@ -1,60 +1,56 @@
 # Cambridge Crime Data Pipeline
 
-An end-to-end data engineering project that collects daily crime incident data from the Cambridge Police Department, processes it, stores it in a PostgreSQL database, and presents the results through an interactive dashboard.
+An end-to-end data pipeline that collects incident records from the Cambridge Police Department's public data, prepares them for analysis, and presents the results in an interactive Streamlit dashboard.
 
-The idea behind this project was to build a pipeline that keeps crime data organised and makes it easier to explore patterns and trends over time without manually processing the data every time.
+I built this project to get hands-on experience with the full data engineering workflow — from pulling data from an API to storing it in a database and making the results useful through visualisations.
 
-**Live Dashboard:** [Cambridge Crime Trends](https://cambridge-crime-data-pipeline.streamlit.app/)
+**Live dashboard:** [Cambridge Crime Analytics](https://cambridge-crime-trends-data-pipeline.streamlit.app/)  
+**GitHub repository:** [Nishanta04/cambridge-crime-data-pipeline](https://github.com/Nishanta04/cambridge-crime-data-pipeline)
 
-## What This Project Does
+## Dashboard
 
-The pipeline follows four main steps:
+The dashboard brings the main trends and recent incident records together in one place. It includes date and record-type filters, summary statistics, time-based analysis, offence breakdowns, and an incident feed.
 
-1. **Extract:** Fetches crime incident records from the Cambridge Police Department's public dataset using the Socrata API.
-2. **Validate:** Checks the incoming data for missing fields, invalid values, and schema issues.
-3. **Transform:** Removes duplicate records and extracts useful date and time information such as year, month, day, hour, and day of the week.
-4. **Load:** Stores the processed records in a PostgreSQL database using upsert operations to avoid duplicate entries.
+![Cambridge Crime Analytics dashboard](assets/dashboard.png)
 
-The processed data is then used by a Streamlit dashboard to explore crime trends and patterns.
+## What it does
 
-## Tech Stack
+The pipeline follows an extract, transform, and load (ETL) workflow:
 
-- **Python** – Core programming language
-- **Pandas** – Data cleaning and transformation
-- **Socrata API (Sodapy)** – Data extraction
-- **Prefect** – ETL workflow orchestration
-- **PostgreSQL (Neon)** – Database
-- **SQLAlchemy** – Database operations
-- **Streamlit** – Interactive dashboard
-- **Plotly** – Data visualization
-- **GitHub** – Version control
+1. **Extract** – Fetches Cambridge Police Department incident data from the Socrata Open Data API.
+2. **Validate** – Checks the incoming records and handles missing or invalid values.
+3. **Transform** – Cleans the data, removes duplicate records, and derives useful date and time fields for analysis.
+4. **Load** – Stores the processed records in a PostgreSQL database. The load process is designed to avoid inserting the same incident more than once.
+5. **Visualise** – Reads the stored data and displays interactive analytics through Streamlit.
 
-## Project Structure
+The pipeline is also set up for scheduled execution, so the dataset can be refreshed without having to run the process manually each day.
 
-```text
-cambridge-crime-data-pipeline/
-│
-├── .github/
-│   └── workflows/       # GitHub Actions workflows
-│
-├── .env.example         # Environment variable template
-├── .gitignore
-│
-├── extract.py           # Fetch data from Socrata API
-├── validate.py          # Validate incoming records
-├── transform.py         # Clean and transform data
-├── load.py              # Load data into PostgreSQL
-│
-├── etl_pipeline.py      # Main ETL pipeline
-├── dashboard.py         # Streamlit dashboard
-│
-├── requirements.txt     # Python dependencies
-└── README.md
-```
+## Dashboard features
 
-## Getting Started
+- Filter records by date range and record type.
+- Search for incidents by location.
+- View headline figures such as total incidents, arrests, and average incidents per day.
+- Explore incident trends over time, with daily, weekly, and monthly views.
+- Compare activity by hour of day and day of week.
+- See offence-category distribution and activity patterns in a day-versus-hour heatmap.
+- Review recent records in the incident table.
 
-If you want to run the project locally, follow these steps.
+The figures and charts are generated from the database records and respond to the selected filters.
+
+## Tech stack
+
+| Tool | How it is used |
+| --- | --- |
+| Python | Main language for the pipeline and dashboard |
+| Pandas | Data cleaning, transformation, and aggregation |
+| Socrata API | Source of Cambridge Police Department incident data |
+| SQLAlchemy | Database interaction |
+| PostgreSQL (Neon) | Stores the processed incident records |
+| Streamlit | Interactive dashboard |
+| Plotly | Interactive charts and visualisations |
+| GitHub Actions | Scheduled pipeline execution |
+
+## Running it locally
 
 ### 1. Clone the repository
 
@@ -63,21 +59,16 @@ git clone https://github.com/Nishanta04/cambridge-crime-data-pipeline.git
 cd cambridge-crime-data-pipeline
 ```
 
-### 2. Create a virtual environment
+### 2. Create and activate a virtual environment
 
 ```bash
 python -m venv .venv
-```
-
-Activate it:
-
-**Linux / macOS**
-```bash
 source .venv/bin/activate
 ```
 
-**Windows**
-```bash
+On Windows, activate it with:
+
+```powershell
 .venv\Scripts\activate
 ```
 
@@ -89,69 +80,44 @@ pip install -r requirements.txt
 
 ### 4. Configure environment variables
 
-Create a `.env` file in the root directory using `.env.example` as a reference.
+Create a `.env` file in the project root. Add the values required by your local setup:
 
 ```env
 DATABASE_URL=your_postgresql_connection_string
 SOCRATA_APP_TOKEN=your_socrata_app_token
 ```
 
-The Socrata app token is optional, but using one helps avoid API request throttling.
+`SOCRATA_APP_TOKEN` may be optional depending on the API usage and configuration. A token is useful when you need an application-specific Socrata API connection.
 
-For local testing, the pipeline also supports SQLite when `DATABASE_URL` is not provided.
+If your setup uses Prefect, add the relevant Prefect variables as well:
 
-### 5. Run the ETL pipeline
-
-```bash
-python etl_pipeline.py
+```env
+PREFECT_API_URL=your_prefect_api_url
+PREFECT_API_KEY=your_prefect_api_key
 ```
 
-This executes the complete workflow:
+Keep `.env` out of Git. Do not commit database credentials, API tokens, or other secrets. Use the deployment platform's secrets or environment-variable settings for hosted runs.
 
-**Extract → Validate → Transform → Load**
-
-### 6. Run the dashboard
-
-In a separate terminal, activate the virtual environment and run:
+### 5. Start the dashboard
 
 ```bash
 streamlit run dashboard.py
 ```
 
-The dashboard will be available at:
+Streamlit will print a local URL in the terminal, usually `http://localhost:8501`.
 
-```text
-http://localhost:8501
-```
+### 6. Run the ETL pipeline
 
-## Dashboard
+Run the project's ETL entry point using the command configured in the repository or trigger the scheduled GitHub Actions workflow manually from the **Actions** tab. The workflow is configured to run automatically on its schedule.
 
-The dashboard provides an interactive way to explore the processed Cambridge crime data and understand how reported incidents vary over time.
+> The dashboard needs a working database connection and processed records to display the analytics.
 
-You can access the deployed version here:
+## Deployment
 
-[Open Cambridge Crime Trends Dashboard](https://cambridge-crime-data-pipeline.streamlit.app/)
+The dashboard is deployed on Streamlit Community Cloud and uses a PostgreSQL database hosted on Neon. The daily ETL workflow is configured through GitHub Actions.
 
-## Data Source
+For deployment, make sure the required environment variables are configured in the hosting platform. Never place credentials directly in the source code or in `config.toml`.
 
-The project uses the Cambridge Police Department Daily Police Log dataset, available through the Socrata Open Data Portal.
+## A note about the data
 
-[Cambridge Police Department – Daily Police Log](https://data.cambridgema.gov/)
-
-## What I Learned
-
-Building this project helped me get hands-on experience with:
-
-- Designing an end-to-end ETL pipeline.
-- Working with public APIs and real-world datasets.
-- Implementing data validation and cleaning.
-- Handling duplicate records through database upserts.
-- Connecting Python applications to PostgreSQL.
-- Orchestrating workflows using Prefect.
-- Building interactive dashboards with Streamlit and Plotly.
-
-## Author
-
-**Nishanta Makkar**
-
-[GitHub Profile](https://github.com/Nishanta04)
+This project uses publicly available Cambridge Police Department incident records. The dashboard is intended for exploring patterns in the published data; it should not be treated as a measure of all crime or as a substitute for official reporting. Records can be updated or corrected by the source, and the dashboard reflects the data available to the pipeline.
