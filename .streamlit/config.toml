@@ -1,0 +1,9 @@
+# Native Streamlit widget theming (date-picker calendar, dropdown popups), matched
+# to the dashboard's dark token palette. Custom chrome lives in dashboard.py.
+[theme]
+base = "dark"
+primaryColor = "#e5484d"
+backgroundColor = "#0f1216"
+secondaryBackgroundColor = "#151a21"
+textColor = "#e8ebf0"
+font = "sans serif"
