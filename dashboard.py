@@ -537,36 +537,24 @@ peak_hour = int(data["hour"].mode().iat[0])
 n_categories = int(data["subtype"].dropna().nunique())
 n_locations = int(data["location"].dropna().nunique())
 
-# ── KPI row 1: primary figures ──────────────────────────────────────────────────
-k1, k2, k3, k4 = st.columns(4)
-with k1:
-    st.markdown(
-        f"""<div class="kpi"><div class="v accent">{cur_n:,}</div>
+# ── KPI row 1: primary figures (single flex row; .kpi-row carries the spacing) ──
+st.markdown(
+    f"""<div class="kpi-row">
+      <div class="kpi"><div class="v accent">{cur_n:,}</div>
         <div class="l">Total recorded incidents</div>
-        {delta_chip(cur_n, prev_n)}</div>""",
-        unsafe_allow_html=True,
-    )
-with k2:
-    st.markdown(
-        f"""<div class="kpi"><div class="v">{arrests:,}</div>
+        {delta_chip(cur_n, prev_n)}</div>
+      <div class="kpi"><div class="v">{arrests:,}</div>
         <div class="l">Arrests ({arrests / cur_n * 100:.1f}% of records)</div>
-        <div class="delta flat">records of type “Arrest”</div></div>""",
-        unsafe_allow_html=True,
-    )
-with k3:
-    st.markdown(
-        f"""<div class="kpi"><div class="v">{cur_n / n_days:,.1f}</div>
+        <div class="delta flat">records of type “Arrest”</div></div>
+      <div class="kpi"><div class="v">{cur_n / n_days:,.1f}</div>
         <div class="l">Average incidents per day</div>
-        <div class="delta flat">over {n_days} days</div></div>""",
-        unsafe_allow_html=True,
-    )
-with k4:
-    st.markdown(
-        f"""<div class="kpi"><div class="v">{peak_hour:02d}:00</div>
+        <div class="delta flat">over {n_days} days</div></div>
+      <div class="kpi"><div class="v">{peak_hour:02d}:00</div>
         <div class="l">Peak crime hour</div>
-        <div class="delta flat">most frequent reporting hour</div></div>""",
-        unsafe_allow_html=True,
-    )
+        <div class="delta flat">most frequent reporting hour</div></div>
+    </div>""",
+    unsafe_allow_html=True,
+)
 
 # ── Secondary strip ──────────────────────────────────────────────────────────────
 st.markdown(
